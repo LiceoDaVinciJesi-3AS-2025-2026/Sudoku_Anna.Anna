@@ -1,2 +1,2 @@
 def main() -> None:
-    print("Hello from sudoku-anna-anna!")
+    import sudoku_anna_anna.funzioneDivina
