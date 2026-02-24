@@ -22,6 +22,10 @@ quadretto = 100
 
 lettere = ["A", "B", "C", "D", "E", "F", "G", "H", "I"]
 
+# font per le lettere e numeri da mettere ai lati della tabella e all'interno delle caselle
+font_sudoku = pygame.font.SysFont('Arial', 45, bold=True)
+font_coordinate = pygame.font.SysFont('Georgia', 30, italic=True)
+
 # ciclo che crea ogni casella su ogni riga
 # variabili utili per il ciclo for
 lista_pulsanti = []
@@ -93,14 +97,17 @@ while running:
     
     screen.blit(textRect , (1000 + 45, 925))
     
+    # linee orizzontali e verticali di tutta la griglia
     for x in range(9):
         linee_orizzontali = pygame.draw.line(screen, "black", (150, 150 + (100 * x)), (1050, 150 + (100 * x)), 5)
         linee_verticali = pygame.draw.line(screen, "black", (250 + (100 * x), 50), (250 + (100 * x), 1000), 5)
     
+    # linee più spesse che creano la griglia tipica del sudoku
     for y in range(4):
         spesse_orizzontali = pygame.draw.line(screen, "black", (150, 50 + (300 * y)), (1050, 50 + (300 * y)), 10)
         spesse_verticali = pygame.draw.line(screen, "black", (150 + (300 * y), 50), (150 + (300 * y), 1000), 10)
-
+    
+    # stabilisce delle variabili (posizione, altezza e larghezza) per ogni quadretto della griglia 
     for rect in lista_pulsanti:
         posizione = rect.topleft
         altezza = rect.height
@@ -111,5 +118,43 @@ while running:
         colore = (c, c, c, 10)
         
         # pygame.draw.rect(screen, colore, rect)
+    
+    # NUMERI E LETTERE FUORI DAL SUDOKU
+    for i in range(9):
+        # Lettere A-I sopra le colonne
+        testo_colonna = font_coordinate.render(lettere[i], True, "blue")
+        
+        # Utilizza la variabile 'quadretto' per distanziarle: 150 (margine) + i * 100 + metà quadretto
+        x_lettera = 150 + (i * quadretto) + (quadretto // 2) - 15
+        # scrive la lettera
+        screen.blit(testo_colonna, (x_lettera, 10))
+        
+        # Numeri 1-9 a sinistra delle righe
+        testo_riga = font_coordinate.render(str(i + 1), True, "blue")
+        # Usa 'quadretto' per l'altezza: 50 (margine) + i * 100 + metà quadretto
+        y_riga = 50 + (i * quadretto) + (quadretto // 2) - 15
+        # scrive il numero
+        screen.blit(testo_riga, (110, y_riga))
 
+    # NUMERI NELLE CASELLE
+    for i in range(len(lista_pulsanti)):
+        rettangolo_corrente = lista_pulsanti[i]
+        
+        # Trova riga e colonna (1-9) per la funzione prendi_valore_da_casella (per stabilire successivamente la variabile contenente entrambe le coordinate)
+        riga = (i // 9) + 1
+        colonna = (i % 9) + 1
+        
+        # variabili trovate attraverso la funzione iniziale
+        valore_da_disegnare = prendi_valore_da_casella(riga, colonna)
+        
+        # Se la casella contiene un numero (diverso da 0 o vuoto)
+        if str(valore_da_disegnare) != "0" and str(valore_da_disegnare) != "":
+            
+            testo_num = font_sudoku.render(str(valore_da_disegnare), True, "black")
+            
+            # Usiamo le proprietà del rettangolo (altezza e larghezza) per centrare
+            # 'get_rect(center=...)' calcola tutto da solo usando i dati del pulsante
+            pos_centro = testo_num.get_rect(center=rettangolo_corrente.center)
+            screen.blit(testo_num, pos_centro)
+    
     pygame.display.flip()
