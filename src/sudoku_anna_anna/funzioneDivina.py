@@ -51,13 +51,15 @@ def prendi_valore_da_casella(riga, colonna):
     return valore
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Aggiungere forme geometriche")
 
 running = True
 
 font = pygame.font.SysFont('Georgia',30) 
 textRect = font.render('Esci' , True , "white") 
 buttonRect = pygame.Rect(1200, 925, 140, 30)
+
+# all'inizio nessuna casella è selezionata
+casella_selezionata = None
 
 while running:
 
@@ -78,7 +80,10 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             for i in range(len(lista_pulsanti)):
                 if lista_pulsanti[i].collidepoint(mPos):
-                # trova il nome della casella che hai cliccato dalla lista_pulsanti
+                    # Memorizzo l'indice della casella
+                    casella_selezionata = i
+                    
+                    # trova il nome della casella che hai cliccato dalla lista_pulsanti
                     nome = lista_nomipulsanti[i]
                     print("Il nome della casella è:", nome)
                     
@@ -94,7 +99,7 @@ while running:
                     valore_dal_puzzle = prendi_valore_da_casella(riga, colonna)
                     
                     print(f"Il valore che hai selezionato è {valore_dal_puzzle}")
-    
+                    
     screen.fill("white")
     
     buttonColor = "red"
@@ -120,17 +125,17 @@ while running:
     
     # NUMERI E LETTERE FUORI DAL SUDOKU
     for i in range(9):
-        # Lettere A-I sopra le colonne
+        # lettere A-I sopra le colonne
         testo_colonna = font_coordinate.render(lettere[i], True, "blue")
         
-        # Utilizza la variabile 'quadretto' per distanziarle: 150 (margine) + i * 100 + metà quadretto
+        # utilizza la variabile 'quadretto' per distanziarle: 150 (margine) + i * 100 + metà quadretto
         x_lettera = 150 + (i * quadretto) + (quadretto // 2) - 15
         # scrive la lettera
         screen.blit(testo_colonna, (x_lettera, 10))
         
-        # Numeri 1-9 a sinistra delle righe
+        # numeri 1-9 a sinistra delle righe
         testo_riga = font_coordinate.render(str(i + 1), True, "blue")
-        # Usa 'quadretto' per l'altezza: 50 (margine) + i * 100 + metà quadretto
+        # usa 'quadretto' per l'altezza: 50 (margine) + i * 100 + metà quadretto
         y_riga = 50 + (i * quadretto) + (quadretto // 2) - 15
         # scrive il numero
         screen.blit(testo_riga, (110, y_riga))
@@ -139,19 +144,28 @@ while running:
     for i in range(len(lista_pulsanti)):
         rettangolo_corrente = lista_pulsanti[i]
         
-        # Trova riga e colonna (1-9) per la funzione prendi_valore_da_casella (per stabilire successivamente la variabile contenente entrambe le coordinate)
+        # evidenzia la casella selezionata
+        if casella_selezionata == i:
+            # .inflate(-20, -20) riduce la larghezza e l'altezza di 20 pixel
+            # lasciando 10 pixel di "bordo" bianco tutto intorno
+            casella_piccola = rettangolo_corrente.inflate(-20, -20)
+            
+            # disegno la casella azzurra (versione ridotta)
+            pygame.draw.rect(screen, (235, 245, 255), casella_piccola, border_radius=8)
+        
+        # trova riga e colonna (1-9) per la funzione prendi_valore_da_casella (per stabilire successivamente la variabile contenente entrambe le coordinate)
         riga = (i // 9) + 1
         colonna = (i % 9) + 1
         
         # variabili trovate attraverso la funzione iniziale
         valore_da_disegnare = prendi_valore_da_casella(riga, colonna)
         
-        # Se la casella contiene un numero (diverso da 0 o vuoto)
+        # se la casella contiene un numero (diverso da 0 o vuoto)
         if str(valore_da_disegnare) != "." and str(valore_da_disegnare) != "":
             
             testo_num = font_sudoku.render(str(valore_da_disegnare), True, "black")
             
-            # Usiamo le proprietà del rettangolo (altezza e larghezza) per centrare
+            # usiamo le proprietà del rettangolo (altezza e larghezza) per centrare
             # 'get_rect(center=...)' calcola tutto da solo usando i dati del pulsante
             pos_centro = testo_num.get_rect(center=rettangolo_corrente.center)
             screen.blit(testo_num, pos_centro)
