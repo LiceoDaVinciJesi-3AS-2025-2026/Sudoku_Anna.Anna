@@ -15,7 +15,7 @@ import pygame
 
 pygame.init()
 
-SCREEN_WIDTH = 1200
+SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 1000
 
 quadretto = 100
@@ -57,7 +57,7 @@ running = True
 
 font = pygame.font.SysFont('Georgia',30) 
 textRect = font.render('Esci' , True , "white") 
-buttonRect = pygame.Rect(1000, 925, 140, 30)
+buttonRect = pygame.Rect(1200, 925, 140, 30)
 
 while running:
 
@@ -69,6 +69,11 @@ while running:
             running = False
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             running = False
+          # quando clicchi SOPRA il pulsante... FAI QUALCOSA!!!
+        if event.type == pygame.MOUSEBUTTONDOWN: 
+            if buttonRect.collidepoint(mPos):
+                running = False
+                
         # quando clicchi sopra il pulsante
         if event.type == pygame.MOUSEBUTTONDOWN:
             for i in range(len(lista_pulsanti)):
@@ -82,7 +87,9 @@ while running:
                     riga = int(valori[0])
                     colonna = int(valori[1])
                     
-                    print(riga, colonna)
+                    lettera_colonna = lettere[colonna-1]
+                    
+                    print(riga, lettera_colonna)
                     
                     valore_dal_puzzle = prendi_valore_da_casella(riga, colonna)
                     
@@ -95,29 +102,21 @@ while running:
         buttonColor = "blue"
     button = pygame.draw.rect(screen,buttonColor,buttonRect)
     
-    screen.blit(textRect , (1000 + 45, 925))
+    screen.blit(textRect , (1200 + 45, 925))
     
     # linee orizzontali e verticali di tutta la griglia
     for x in range(9):
         linee_orizzontali = pygame.draw.line(screen, "black", (150, 150 + (100 * x)), (1050, 150 + (100 * x)), 5)
-        linee_verticali = pygame.draw.line(screen, "black", (250 + (100 * x), 50), (250 + (100 * x), 1000), 5)
+        linee_verticali = pygame.draw.line(screen, "black", (250 + (100 * x), 50), (250 + (100 * x), 950), 5)
     
     # linee più spesse che creano la griglia tipica del sudoku
     for y in range(4):
         spesse_orizzontali = pygame.draw.line(screen, "black", (150, 50 + (300 * y)), (1050, 50 + (300 * y)), 10)
-        spesse_verticali = pygame.draw.line(screen, "black", (150 + (300 * y), 50), (150 + (300 * y), 1000), 10)
+        spesse_verticali = pygame.draw.line(screen, "black", (150 + (300 * y), 50), (150 + (300 * y), 950), 10)
     
-    # stabilisce delle variabili (posizione, altezza e larghezza) per ogni quadretto della griglia 
-    for rect in lista_pulsanti:
-        posizione = rect.topleft
-        altezza = rect.height
-        larghezza = rect.width
-        
-        c = random.randint(0, 255)
-        
-        colore = (c, c, c, 10)
-        
-        # pygame.draw.rect(screen, colore, rect)
+     # stabilisce delle variabili (posizione, altezza e larghezza) per ogni quadretto della griglia 
+         
+         # pygame.draw.rect(screen, colore, rect)
     
     # NUMERI E LETTERE FUORI DAL SUDOKU
     for i in range(9):
@@ -148,7 +147,7 @@ while running:
         valore_da_disegnare = prendi_valore_da_casella(riga, colonna)
         
         # Se la casella contiene un numero (diverso da 0 o vuoto)
-        if str(valore_da_disegnare) != "0" and str(valore_da_disegnare) != "":
+        if str(valore_da_disegnare) != "." and str(valore_da_disegnare) != "":
             
             testo_num = font_sudoku.render(str(valore_da_disegnare), True, "black")
             
