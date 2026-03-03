@@ -2,18 +2,19 @@
 # La potete utilizzare finchè Anna smette di ridere
 
 import random
+import time 
 
 from sudoku9 import SudokuGenerator
 
-generator = SudokuGenerator(difficulty="hard")
-puzzle = generator.get_puzzle()
-
-for row in puzzle:
-    print(" ".join(row))
+puzzle: list | None = None
+user_puzzle: list | None = None
 
 import pygame
 
 pygame.init()
+
+# gli stati sono "menu" e "playing"
+STATO = "menu"
 
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 1000
@@ -61,8 +62,15 @@ buttonRect = pygame.Rect(1200, 925, 140, 30)
 # all'inizio nessuna casella è selezionata
 casella_selezionata = None
 
-# crea una copia del puzzle per le modifiche dell'utente
-user_puzzle = [list(row) for row in puzzle]
+# per le tre difficoltà del sudoku (facile, medio, difficile)
+easy_difficulty_button_text = font.render("FACILE", True, "white")
+easy_difficulty_button_rect = easy_difficulty_button_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3))
+
+medium_difficulty_button_text = font.render("MEDIO", True, "white")
+medium_difficulty_button_rect = medium_difficulty_button_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3 + 75))
+
+hard_difficulty_button_text = font.render("DIFFICILE", True, "white")
+hard_difficulty_button_rect = hard_difficulty_button_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3 + 150))
 
 # funzione che verifica se il numero inserito è già presente nella stessa riga o colonna
 def mossa_valida(griglia, r, c, val):
@@ -84,6 +92,32 @@ def mossa_valida(griglia, r, c, val):
     # ritorna True se  possibile scrivere quel numero in quella casella (e non ci sono doppioni)
     return True
 
+def genera_puzzle(opzione: str):
+    # in pratica global evita di creare una variabile DENTRO la funzione e quindi si riferisce a "puzzle" che si trova fuori dalla funzione
+    global puzzle, user_puzzle
+
+    generator = SudokuGenerator(difficulty=opzione)
+    puzzle = generator.get_puzzle()
+
+    user_puzzle = [list(row) for row in puzzle] # type: ignore
+
+    print("Puzzle Generato:")
+
+    for row in puzzle: # type: ignore
+        print(" ".join(row))
+
+def inizia_gioco(opzione: str):
+    global STATO
+
+    print(f"Inizio il gioco con difficoltà {opzione}")
+
+    genera_puzzle(opzione)
+
+    while genera_puzzle == None:
+        print("Generando...")
+        time.sleep(.5)
+
+    STATO = "playing"
 
 while running:
 
@@ -124,32 +158,41 @@ while running:
                     
                     print(f"Il valore che hai selezionato è {valore_dal_puzzle}")
         
-        # se clicchi e se sul punto in cui hai cliccato c'è una casella
-        if event.type == pygame.KEYDOWN and casella_selezionata is not None:
-            # trova il nome della casella e le coordinate
-            nome = lista_nomipulsanti[casella_selezionata]
-            valori = nome.replace("buttonRect_", "").split("_")
-            r_idx = int(valori[0]) - 1
-            c_idx = int(valori[1]) - 1
+        elif STATO == "menu":
+                if easy_difficulty_button_rect.collidepoint(mPos):
+                    inizia_gioco("easy")
+                elif medium_difficulty_button_rect.collidepoint(mPos):
+                    inizia_gioco("medium")
+                elif hard_difficulty_button_rect.collidepoint(mPos):
+                    inizia_gioco("hard")
+        
+    # se clicchi e se sul punto in cui hai cliccato c'è una casella
+    if event.type == pygame.KEYDOWN and casella_selezionata is not None:
+        # trova il nome della casella e le coordinate
+        nome = lista_nomipulsanti[casella_selezionata]
+        valori = nome.replace("buttonRect_", "").split("_")
+        r_idx = int(valori[0]) - 1
+        c_idx = int(valori[1]) - 1
 
-            # ti fa scrivere solo se la casella originale (quella iniziale del puzzle che hai inserito nella griglia) era vuota (".")
-            if puzzle[r_idx][c_idx] == ".":
-                # filtra solo numeri da 1 a 9 (tastiera standard e tastierino)
-                if pygame.K_1 <= event.key <= pygame.K_9:
-                    user_puzzle[r_idx][c_idx] = str(event.key - pygame.K_0)
-                elif pygame.K_KP1 <= event.key <= pygame.K_KP9:
-                    user_puzzle[r_idx][c_idx] = str(event.key - pygame.K_KP1 + 1)
-                # permette di cancellare con Backspace o Canc
-                elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
-                    user_puzzle[r_idx][c_idx] = "."
+        # ti fa scrivere solo se la casella originale (quella iniziale del puzzle che hai inserito nella griglia) era vuota (".")
+        if puzzle[r_idx][c_idx] == ".":
+            # filtra solo numeri da 1 a 9 (tastiera standard e tastierino)
+            if pygame.K_1 <= event.key <= pygame.K_9:
+                user_puzzle[r_idx][c_idx] = str(event.key - pygame.K_0)
+            elif pygame.K_KP1 <= event.key <= pygame.K_KP9:
+                user_puzzle[r_idx][c_idx] = str(event.key - pygame.K_KP1 + 1)
+            # permette di cancellare con Backspace o Canc
+            elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
+                user_puzzle[r_idx][c_idx] = "."
          
-    screen.fill("white")
-    
+screen.fill("white")
+
+if STATO == "playing" and puzzle != None and user_puzzle != None:
     buttonColor = "red"
     if buttonRect.collidepoint(mPos):
         buttonColor = "blue"
     button = pygame.draw.rect(screen,buttonColor,buttonRect)
-    
+        
     screen.blit(textRect , (1200 + 45, 925))
     
     # linee orizzontali e verticali di tutta la griglia
@@ -221,6 +264,21 @@ while running:
             testo_num = font_sudoku.render(str(valore_da_disegnare), True, colore)
             pos_centro = testo_num.get_rect(center=rettangolo_corrente.center)
             screen.blit(testo_num, pos_centro)
+    
+elif STATO == "menu":
+        # cambia il titolo con quello desiderato
+        title_surface = font_sudoku.render("Sudoku Skifoso", True, (0, 0, 0))
+        title_rect = title_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 6))
+        screen.blit(title_surface, title_rect)
+
+        pygame.draw.rect(screen, (0, 0, 0), (easy_difficulty_button_rect.topleft[0] -15, easy_difficulty_button_rect.topleft[1] - 5, easy_difficulty_button_rect.width + 30, easy_difficulty_button_rect.height + 10))
+        screen.blit(easy_difficulty_button_text, easy_difficulty_button_rect)
+
+        pygame.draw.rect(screen, (0, 0, 0), (medium_difficulty_button_rect.topleft[0] -15, medium_difficulty_button_rect.topleft[1] - 5, medium_difficulty_button_rect.width + 30, medium_difficulty_button_rect.height + 10))
+        screen.blit(medium_difficulty_button_text, medium_difficulty_button_rect)
+
+        pygame.draw.rect(screen, (0, 0, 0), (hard_difficulty_button_rect.topleft[0] -15, hard_difficulty_button_rect.topleft[1] - 5, hard_difficulty_button_rect.width + 30, hard_difficulty_button_rect.height + 10))
+        screen.blit(hard_difficulty_button_text, hard_difficulty_button_rect)
 
     
     pygame.display.flip()
