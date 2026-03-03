@@ -61,6 +61,30 @@ buttonRect = pygame.Rect(1200, 925, 140, 30)
 # all'inizio nessuna casella è selezionata
 casella_selezionata = None
 
+# crea una copia del puzzle per le modifiche dell'utente
+user_puzzle = [list(row) for row in puzzle]
+
+# funzione che verifica se il numero inserito è già presente nella stessa riga o colonna
+def mossa_valida(griglia, r, c, val):
+    # se la casella è vuota, non c'è errore
+    if val == ".": return True
+    # controlla riga e colonna
+    # tranne quella appena selezionata perchè se no
+    # dovrebbe controllare se il numero da controllare c'è nella casella dove c'è il numero stesso
+    # e c'è sicuramente e renderebbe la casella selezionata rossa ogni volta
+    for i in range(9):
+        if (griglia[r][i] == val and i != c) or (griglia[i][c] == val and i != r):
+            return False
+    # controlla il quadratino 3x3
+    start_r, start_c = 3 * (r // 3), 3 * (c // 3)
+    for i in range(start_r, start_r + 3):
+        for j in range(start_c, start_c + 3):
+            if griglia[i][j] == val and (i != r or j != c):
+                return False
+    # ritorna True se  possibile scrivere quel numero in quella casella (e non ci sono doppioni)
+    return True
+
+
 while running:
 
     # posizione del mouse
@@ -99,7 +123,26 @@ while running:
                     valore_dal_puzzle = prendi_valore_da_casella(riga, colonna)
                     
                     print(f"Il valore che hai selezionato è {valore_dal_puzzle}")
-                    
+        
+        # se clicchi e se sul punto in cui hai cliccato c'è una casella
+        if event.type == pygame.KEYDOWN and casella_selezionata is not None:
+            # trova il nome della casella e le coordinate
+            nome = lista_nomipulsanti[casella_selezionata]
+            valori = nome.replace("buttonRect_", "").split("_")
+            r_idx = int(valori[0]) - 1
+            c_idx = int(valori[1]) - 1
+
+            # ti fa scrivere solo se la casella originale (quella iniziale del puzzle che hai inserito nella griglia) era vuota (".")
+            if puzzle[r_idx][c_idx] == ".":
+                # filtra solo numeri da 1 a 9 (tastiera standard e tastierino)
+                if pygame.K_1 <= event.key <= pygame.K_9:
+                    user_puzzle[r_idx][c_idx] = str(event.key - pygame.K_0)
+                elif pygame.K_KP1 <= event.key <= pygame.K_KP9:
+                    user_puzzle[r_idx][c_idx] = str(event.key - pygame.K_KP1 + 1)
+                # permette di cancellare con Backspace o Canc
+                elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
+                    user_puzzle[r_idx][c_idx] = "."
+         
     screen.fill("white")
     
     buttonColor = "red"
@@ -157,17 +200,27 @@ while running:
         riga = (i // 9) + 1
         colonna = (i % 9) + 1
         
-        # variabili trovate attraverso la funzione iniziale
-        valore_da_disegnare = prendi_valore_da_casella(riga, colonna)
+        # leggiamo da user_puzzle (la griglia modificabile)
+        valore_da_disegnare = user_puzzle[riga-1][colonna-1]
         
-        # se la casella contiene un numero (diverso da 0 o vuoto)
-        if str(valore_da_disegnare) != "." and str(valore_da_disegnare) != "":
+        # è tutto in questo if il programma che colora i numeri del sudoku
+        # se la casella non è vuota
+        if str(valore_da_disegnare) not in [".", ""]:
+            # determina il colore: Nero se fisso, altrimenti Blu (valido) o Rosso (errore)
+            if puzzle[riga-1][colonna-1] != ".":
+                colore = "black"
+            else:
+                # usa la funzione mossa_valida passandogli riga e colonna (0-8)
+                valido = mossa_valida(user_puzzle, riga-1, colonna-1, valore_da_disegnare)
+                # colora la casella di blu se non ci sono doppioni (quando valido = True),
+                # altrimenti la colora di rosso (valido = False) (colora entrambe le caselle con i doppioni, tranne i numeri fissi che rimangono neri)
+                # colora entrambe le caselle perchè il ciclo analizza la griglia subito dopo che hai inserito il numero
+                # --> quindi verifica il primo numero che trova e lo rende rosso, poi quando trova il secondo rende rosso anche quello perch in entrambi i casi trova un doppione
+                colore = "blue" if valido else "red"
             
-            testo_num = font_sudoku.render(str(valore_da_disegnare), True, "black")
-            
-            # usiamo le proprietà del rettangolo (altezza e larghezza) per centrare
-            # 'get_rect(center=...)' calcola tutto da solo usando i dati del pulsante
+            testo_num = font_sudoku.render(str(valore_da_disegnare), True, colore)
             pos_centro = testo_num.get_rect(center=rettangolo_corrente.center)
             screen.blit(testo_num, pos_centro)
+
     
     pygame.display.flip()
