@@ -4,6 +4,8 @@
 import random
 import time 
 
+from sudoku9 import SudokuSolver
+
 from sudoku9 import SudokuGenerator
 
 puzzle: list | None = None
@@ -62,14 +64,14 @@ buttonRect = pygame.Rect(1200, 925, 140, 30)
 # all'inizio nessuna casella è selezionata
 casella_selezionata = None
 
-# per le tre difficoltà del sudoku (facile, medio, difficile)
-easy_difficulty_button_text = font.render("FACILE", True, "white")
+# colore e carattere dei rettangoli per le tre difficoltà del sudoku (facile, medio, difficile) della scheramata iniziale
+easy_difficulty_button_text = font.render("FACILE", True, "green")
 easy_difficulty_button_rect = easy_difficulty_button_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3))
 
-medium_difficulty_button_text = font.render("MEDIO", True, "white")
+medium_difficulty_button_text = font.render("MEDIO", True, "orange")
 medium_difficulty_button_rect = medium_difficulty_button_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3 + 75))
 
-hard_difficulty_button_text = font.render("DIFFICILE", True, "white")
+hard_difficulty_button_text = font.render("DIFFICILE", True, "red")
 hard_difficulty_button_rect = hard_difficulty_button_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3 + 150))
 
 # funzione che verifica se il numero inserito è già presente nella stessa riga o colonna
@@ -288,7 +290,7 @@ while running:
                 pos_centro = testo_num.get_rect(center=rettangolo_corrente.center)
                 screen.blit(testo_num, pos_centro)
                 
-                if controlla_vittoria():
+        if controlla_vittoria():
                 # disegna un rettangolo per far risaltare la scritta
                 messaggio_rect = pygame.Rect(SCREEN_WIDTH // 2 - 200, SCREEN_HEIGHT // 2 - 50, 400, 100)
                 pygame.draw.rect(screen, (0, 200, 0), messaggio_rect, border_radius=15) # Verde
@@ -296,7 +298,7 @@ while running:
                 testo_vittoria = font_sudoku.render("HAI VINTO!", True, "white")
                 text_rect = testo_vittoria.get_rect(center=messaggio_rect.center)
                 screen.blit(testo_vittoria, text_rect)   
-        
+            
     
     elif STATE == "menu":
         # colore dello schermo del menu
@@ -306,13 +308,13 @@ while running:
         title_rect = title_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 6))
         screen.blit(title_surface, title_rect)
 
-        pygame.draw.rect(screen, (0, 0, 0), (easy_difficulty_button_rect.topleft[0] -15, easy_difficulty_button_rect.topleft[1] - 5, easy_difficulty_button_rect.width + 30, easy_difficulty_button_rect.height + 10))
+        pygame.draw.rect(screen, (255, 253, 208), (easy_difficulty_button_rect.topleft[0] -15, easy_difficulty_button_rect.topleft[1] - 5, easy_difficulty_button_rect.width + 30, easy_difficulty_button_rect.height + 10))
         screen.blit(easy_difficulty_button_text, easy_difficulty_button_rect)
 
-        pygame.draw.rect(screen, (0, 0, 0), (medium_difficulty_button_rect.topleft[0] -15, medium_difficulty_button_rect.topleft[1] - 5, medium_difficulty_button_rect.width + 30, medium_difficulty_button_rect.height + 10))
+        pygame.draw.rect(screen, (255, 253, 208), (medium_difficulty_button_rect.topleft[0] -15, medium_difficulty_button_rect.topleft[1] - 5, medium_difficulty_button_rect.width + 30, medium_difficulty_button_rect.height + 10))
         screen.blit(medium_difficulty_button_text, medium_difficulty_button_rect)
 
-        pygame.draw.rect(screen, (0, 0, 0), (hard_difficulty_button_rect.topleft[0] -15, hard_difficulty_button_rect.topleft[1] - 5, hard_difficulty_button_rect.width + 30, hard_difficulty_button_rect.height + 10))
+        pygame.draw.rect(screen, (255, 253, 208), (hard_difficulty_button_rect.topleft[0] -15, hard_difficulty_button_rect.topleft[1] - 5, hard_difficulty_button_rect.width + 30, hard_difficulty_button_rect.height + 10))
         screen.blit(hard_difficulty_button_text, hard_difficulty_button_rect)
 
     
