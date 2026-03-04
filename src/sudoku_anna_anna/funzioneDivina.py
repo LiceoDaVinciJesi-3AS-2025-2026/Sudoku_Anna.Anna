@@ -92,19 +92,44 @@ def mossa_valida(griglia, r, c, val):
     # ritorna True se  possibile scrivere quel numero in quella casella (e non ci sono doppioni)
     return True
 
+# funzione che controlla se i numeri inseriti nello user_puzzle( il sudoku dell'utente ) coincidono con i numeri della soluzione
+def controlla_vittoria():
+    for r in range(9):
+        for c in range(9):
+            # se c'è un punto o il numero è diverso dalla soluzione
+            if user_puzzle[r][c] == "." or user_puzzle[r][c] != soluzione_completa[r][c]:
+                return False
+    return True
+
+# creo questa variabile che all'inizio deve essere nulla e ogni volta che genra il sudoku la soluzione cambia valore
+soluzione_completa = None
+
+
 def genera_puzzle(opzione: str):
     # in pratica global evita di creare una variabile DENTRO la funzione e quindi si riferisce a "puzzle" che si trova fuori dalla funzione
-    global puzzle, user_puzzle
+    global puzzle, user_puzzle, soluzione_completa
 
     generator = SudokuGenerator(difficulty=opzione)
+    # prende il puzzle dal generatore della difficoltà inserita
     puzzle = generator.get_puzzle()
-
+    
+    # prende la funzione soluzione e la soluzione del puzzle generato
+    solver = SudokuSolver(puzzle)
+    soluzione_completa = solver.solve()
+    
     user_puzzle = [list(row) for row in puzzle] # type: ignore
 
     print("Puzzle Generato:")
-
+    
+    # stampa la griglia sudoku generata nel terminale
     for row in puzzle: # type: ignore
         print(" ".join(row))
+    
+    print("Soluzione del Sudoku:")
+    # stampa la soluzione del sudoku nel terminale
+    for row in soluzione_completa:
+        print(" ".join(row))
+
 
 def inizia_gioco(opzione: str):
     # global = permette di interagire e utilizzare le variabili già esistenti fuori dalla funzione, dentro la funzione
@@ -262,8 +287,19 @@ while running:
                 testo_num = font_sudoku.render(str(valore_da_disegnare), True, colore)
                 pos_centro = testo_num.get_rect(center=rettangolo_corrente.center)
                 screen.blit(testo_num, pos_centro)
+                
+                if controlla_vittoria():
+                # disegna un rettangolo per far risaltare la scritta
+                messaggio_rect = pygame.Rect(SCREEN_WIDTH // 2 - 200, SCREEN_HEIGHT // 2 - 50, 400, 100)
+                pygame.draw.rect(screen, (0, 200, 0), messaggio_rect, border_radius=15) # Verde
+                
+                testo_vittoria = font_sudoku.render("HAI VINTO!", True, "white")
+                text_rect = testo_vittoria.get_rect(center=messaggio_rect.center)
+                screen.blit(testo_vittoria, text_rect)   
+        
     
     elif STATE == "menu":
+        # colore dello schermo del menu
         screen.fill((10, 30, 80))
         # cambia il titolo con quello desiderato
         title_surface = font_sudoku.render("Sudoku Anna\u00b2!!", True, (135, 220, 255))
