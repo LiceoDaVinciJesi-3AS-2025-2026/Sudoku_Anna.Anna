@@ -14,7 +14,7 @@ import pygame
 pygame.init()
 
 # gli stati sono "menu" e "playing"
-STATO = "menu"
+STATE = "menu"
 
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 1000
@@ -107,7 +107,7 @@ def genera_puzzle(opzione: str):
         print(" ".join(row))
 
 def inizia_gioco(opzione: str):
-    global STATO
+    global STATE
 
     print(f"Inizio il gioco con difficoltà {opzione}")
 
@@ -117,7 +117,7 @@ def inizia_gioco(opzione: str):
         print("Generando...")
         time.sleep(.5)
 
-    STATO = "playing"
+    STATE = "playing"
 
 while running:
 
@@ -136,29 +136,30 @@ while running:
                 
         # quando clicchi sopra il pulsante
         if event.type == pygame.MOUSEBUTTONDOWN:
-            for i in range(len(lista_pulsanti)):
-                if lista_pulsanti[i].collidepoint(mPos):
-                    # Memorizzo l'indice della casella
-                    casella_selezionata = i
+            if STATE == "playing":
+                for i in range(len(lista_pulsanti)):
+                    if lista_pulsanti[i].collidepoint(mPos):
+                        # Memorizzo l'indice della casella
+                        casella_selezionata = i
                     
-                    # trova il nome della casella che hai cliccato dalla lista_pulsanti
-                    nome = lista_nomipulsanti[i]
-                    print("Il nome della casella è:", nome)
-                    
-                    valori = nome.replace("buttonRect_", "").split("_")
-                    
-                    riga = int(valori[0])
-                    colonna = int(valori[1])
-                    
-                    lettera_colonna = lettere[colonna-1]
-                    
-                    print(riga, lettera_colonna)
-                    
-                    valore_dal_puzzle = prendi_valore_da_casella(riga, colonna)
-                    
-                    print(f"Il valore che hai selezionato è {valore_dal_puzzle}")
+                        # trova il nome della casella che hai cliccato dalla lista_pulsanti
+                        nome = lista_nomipulsanti[i]
+                        print("Il nome della casella è:", nome)
+                        
+                        valori = nome.replace("buttonRect_", "").split("_")
+                        
+                        riga = int(valori[0])
+                        colonna = int(valori[1])
+                        
+                        lettera_colonna = lettere[colonna-1]
+                        
+                        print(riga, lettera_colonna)
+                        
+                        valore_dal_puzzle = prendi_valore_da_casella(riga, colonna)
+                        
+                        print(f"Il valore che hai selezionato è {valore_dal_puzzle}")
         
-        elif STATO == "menu":
+            elif STATE == "menu":
                 if easy_difficulty_button_rect.collidepoint(mPos):
                     inizia_gioco("easy")
                 elif medium_difficulty_button_rect.collidepoint(mPos):
@@ -167,7 +168,7 @@ while running:
                     inizia_gioco("hard")
         
     # se clicchi e se sul punto in cui hai cliccato c'è una casella
-    if event.type == pygame.KEYDOWN and casella_selezionata is not None:
+    if event.type == pygame.KEYDOWN and casella_selezionata is not None and STATE == "playing" and puzzle != None and user_puzzle != None:
         # trova il nome della casella e le coordinate
         nome = lista_nomipulsanti[casella_selezionata]
         valori = nome.replace("buttonRect_", "").split("_")
@@ -185,100 +186,100 @@ while running:
             elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
                 user_puzzle[r_idx][c_idx] = "."
          
-screen.fill("white")
+    screen.fill("white")
 
-if STATO == "playing" and puzzle != None and user_puzzle != None:
-    buttonColor = "red"
-    if buttonRect.collidepoint(mPos):
-        buttonColor = "blue"
-    button = pygame.draw.rect(screen,buttonColor,buttonRect)
+    if STATE == "playing" and puzzle != None and user_puzzle != None:
+        buttonColor = "red"
+        if buttonRect.collidepoint(mPos):
+            buttonColor = "blue"
+        button = pygame.draw.rect(screen,buttonColor,buttonRect)
         
-    screen.blit(textRect , (1200 + 45, 925))
+        screen.blit(textRect , (1200 + 45, 925))
     
-    # linee orizzontali e verticali di tutta la griglia
-    for x in range(9):
-        linee_orizzontali = pygame.draw.line(screen, "black", (150, 150 + (100 * x)), (1050, 150 + (100 * x)), 5)
-        linee_verticali = pygame.draw.line(screen, "black", (250 + (100 * x), 50), (250 + (100 * x), 950), 5)
+        # linee orizzontali e verticali di tutta la griglia
+        for x in range(9):
+            linee_orizzontali = pygame.draw.line(screen, "black", (150, 150 + (100 * x)), (1050, 150 + (100 * x)), 5)
+            linee_verticali = pygame.draw.line(screen, "black", (250 + (100 * x), 50), (250 + (100 * x), 950), 5)
     
-    # linee più spesse che creano la griglia tipica del sudoku
-    for y in range(4):
-        spesse_orizzontali = pygame.draw.line(screen, "black", (150, 50 + (300 * y)), (1050, 50 + (300 * y)), 10)
-        spesse_verticali = pygame.draw.line(screen, "black", (150 + (300 * y), 50), (150 + (300 * y), 950), 10)
-    
-     # stabilisce delle variabili (posizione, altezza e larghezza) per ogni quadretto della griglia 
-         
-         # pygame.draw.rect(screen, colore, rect)
-    
-    # NUMERI E LETTERE FUORI DAL SUDOKU
-    for i in range(9):
-        # lettere A-I sopra le colonne
-        testo_colonna = font_coordinate.render(lettere[i], True, "blue")
+         # linee più spesse che creano la griglia tipica del sudoku
+        for y in range(4):
+            spesse_orizzontali = pygame.draw.line(screen, "black", (150, 50 + (300 * y)), (1050, 50 + (300 * y)), 10)
+            spesse_verticali = pygame.draw.line(screen, "black", (150 + (300 * y), 50), (150 + (300 * y), 950), 10)
         
-        # utilizza la variabile 'quadretto' per distanziarle: 150 (margine) + i * 100 + metà quadretto
-        x_lettera = 150 + (i * quadretto) + (quadretto // 2) - 15
-        # scrive la lettera
-        screen.blit(testo_colonna, (x_lettera, 10))
-        
-        # numeri 1-9 a sinistra delle righe
-        testo_riga = font_coordinate.render(str(i + 1), True, "blue")
-        # usa 'quadretto' per l'altezza: 50 (margine) + i * 100 + metà quadretto
-        y_riga = 50 + (i * quadretto) + (quadretto // 2) - 15
-        # scrive il numero
-        screen.blit(testo_riga, (110, y_riga))
-
-    # NUMERI NELLE CASELLE
-    for i in range(len(lista_pulsanti)):
-        rettangolo_corrente = lista_pulsanti[i]
-        
-        # evidenzia la casella selezionata
-        if casella_selezionata == i:
-            # .inflate(-20, -20) riduce la larghezza e l'altezza di 20 pixel
-            # lasciando 10 pixel di "bordo" bianco tutto intorno
-            casella_piccola = rettangolo_corrente.inflate(-20, -20)
+         # stabilisce delle variabili (posizione, altezza e larghezza) per ogni quadretto della griglia 
+             
+             # pygame.draw.rect(screen, colore, rect)
+    
+        # NUMERI E LETTERE FUORI DAL SUDOKU
+        for i in range(9):
+            # lettere A-I sopra le colonne
+            testo_colonna = font_coordinate.render(lettere[i], True, "blue")
             
-            # disegno la casella azzurra (versione ridotta)
-            pygame.draw.rect(screen, (235, 245, 255), casella_piccola, border_radius=8)
-        
-        # trova riga e colonna (1-9) per la funzione prendi_valore_da_casella (per stabilire successivamente la variabile contenente entrambe le coordinate)
-        riga = (i // 9) + 1
-        colonna = (i % 9) + 1
-        
-        # leggiamo da user_puzzle (la griglia modificabile)
-        valore_da_disegnare = user_puzzle[riga-1][colonna-1]
-        
-        # è tutto in questo if il programma che colora i numeri del sudoku
-        # se la casella non è vuota
-        if str(valore_da_disegnare) not in [".", ""]:
-            # determina il colore: Nero se fisso, altrimenti Blu (valido) o Rosso (errore)
-            if puzzle[riga-1][colonna-1] != ".":
-                colore = "black"
-            else:
-                # usa la funzione mossa_valida passandogli riga e colonna (0-8)
-                valido = mossa_valida(user_puzzle, riga-1, colonna-1, valore_da_disegnare)
-                # colora la casella di blu se non ci sono doppioni (quando valido = True),
-                # altrimenti la colora di rosso (valido = False) (colora entrambe le caselle con i doppioni, tranne i numeri fissi che rimangono neri)
-                # colora entrambe le caselle perchè il ciclo analizza la griglia subito dopo che hai inserito il numero
-                # --> quindi verifica il primo numero che trova e lo rende rosso, poi quando trova il secondo rende rosso anche quello perch in entrambi i casi trova un doppione
-                colore = "blue" if valido else "red"
+            # utilizza la variabile 'quadretto' per distanziarle: 150 (margine) + i * 100 + metà quadretto
+            x_lettera = 150 + (i * quadretto) + (quadretto // 2) - 15
+            # scrive la lettera
+            screen.blit(testo_colonna, (x_lettera, 10))
             
-            testo_num = font_sudoku.render(str(valore_da_disegnare), True, colore)
-            pos_centro = testo_num.get_rect(center=rettangolo_corrente.center)
-            screen.blit(testo_num, pos_centro)
+            # numeri 1-9 a sinistra delle righe
+            testo_riga = font_coordinate.render(str(i + 1), True, "blue")
+            # usa 'quadretto' per l'altezza: 50 (margine) + i * 100 + metà quadretto
+            y_riga = 50 + (i * quadretto) + (quadretto // 2) - 15
+            # scrive il numero
+            screen.blit(testo_riga, (110, y_riga))
+
+        # NUMERI NELLE CASELLE
+        for i in range(len(lista_pulsanti)):
+            rettangolo_corrente = lista_pulsanti[i]
+            
+            # evidenzia la casella selezionata
+            if casella_selezionata == i:
+                # .inflate(-20, -20) riduce la larghezza e l'altezza di 20 pixel
+                # lasciando 10 pixel di "bordo" bianco tutto intorno
+                casella_piccola = rettangolo_corrente.inflate(-20, -20)
+                
+                # disegno la casella azzurra (versione ridotta)
+                pygame.draw.rect(screen, (235, 245, 255), casella_piccola, border_radius=8)
+            
+            # trova riga e colonna (1-9) per la funzione prendi_valore_da_casella (per stabilire successivamente la variabile contenente entrambe le coordinate)
+            riga = (i // 9) + 1
+            colonna = (i % 9) + 1
+            
+            # leggiamo da user_puzzle (la griglia modificabile)
+            valore_da_disegnare = user_puzzle[riga-1][colonna-1]
+        
+            # è tutto in questo if il programma che colora i numeri del sudoku
+            # se la casella non è vuota
+            if str(valore_da_disegnare) not in [".", ""]:
+                # determina il colore: Nero se fisso, altrimenti Blu (valido) o Rosso (errore)
+                if puzzle[riga-1][colonna-1] != ".":
+                    colore = "black"
+                else:
+                    # usa la funzione mossa_valida passandogli riga e colonna (0-8)
+                    valido = mossa_valida(user_puzzle, riga-1, colonna-1, valore_da_disegnare)
+                    # colora la casella di blu se non ci sono doppioni (quando valido = True),
+                    # altrimenti la colora di rosso (valido = False) (colora entrambe le caselle con i doppioni, tranne i numeri fissi che rimangono neri)
+                    # colora entrambe le caselle perchè il ciclo analizza la griglia subito dopo che hai inserito il numero
+                    # --> quindi verifica il primo numero che trova e lo rende rosso, poi quando trova il secondo rende rosso anche quello perch in entrambi i casi trova un doppione
+                    colore = "blue" if valido else "red"
+                
+                testo_num = font_sudoku.render(str(valore_da_disegnare), True, colore)
+                pos_centro = testo_num.get_rect(center=rettangolo_corrente.center)
+                screen.blit(testo_num, pos_centro)
     
-elif STATO == "menu":
-        # cambia il titolo con quello desiderato
-        title_surface = font_sudoku.render("Sudoku Skifoso", True, (0, 0, 0))
-        title_rect = title_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 6))
-        screen.blit(title_surface, title_rect)
+    elif STATE == "menu":
+            # cambia il titolo con quello desiderato
+            title_surface = font_sudoku.render("Sudoku ", True, (0, 0, 0))
+            title_rect = title_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 6))
+            screen.blit(title_surface, title_rect)
 
-        pygame.draw.rect(screen, (0, 0, 0), (easy_difficulty_button_rect.topleft[0] -15, easy_difficulty_button_rect.topleft[1] - 5, easy_difficulty_button_rect.width + 30, easy_difficulty_button_rect.height + 10))
-        screen.blit(easy_difficulty_button_text, easy_difficulty_button_rect)
+            pygame.draw.rect(screen, (0, 0, 0), (easy_difficulty_button_rect.topleft[0] -15, easy_difficulty_button_rect.topleft[1] - 5, easy_difficulty_button_rect.width + 30, easy_difficulty_button_rect.height + 10))
+            screen.blit(easy_difficulty_button_text, easy_difficulty_button_rect)
 
-        pygame.draw.rect(screen, (0, 0, 0), (medium_difficulty_button_rect.topleft[0] -15, medium_difficulty_button_rect.topleft[1] - 5, medium_difficulty_button_rect.width + 30, medium_difficulty_button_rect.height + 10))
-        screen.blit(medium_difficulty_button_text, medium_difficulty_button_rect)
+            pygame.draw.rect(screen, (0, 0, 0), (medium_difficulty_button_rect.topleft[0] -15, medium_difficulty_button_rect.topleft[1] - 5, medium_difficulty_button_rect.width + 30, medium_difficulty_button_rect.height + 10))
+            screen.blit(medium_difficulty_button_text, medium_difficulty_button_rect)
 
-        pygame.draw.rect(screen, (0, 0, 0), (hard_difficulty_button_rect.topleft[0] -15, hard_difficulty_button_rect.topleft[1] - 5, hard_difficulty_button_rect.width + 30, hard_difficulty_button_rect.height + 10))
-        screen.blit(hard_difficulty_button_text, hard_difficulty_button_rect)
+            pygame.draw.rect(screen, (0, 0, 0), (hard_difficulty_button_rect.topleft[0] -15, hard_difficulty_button_rect.topleft[1] - 5, hard_difficulty_button_rect.width + 30, hard_difficulty_button_rect.height + 10))
+            screen.blit(hard_difficulty_button_text, hard_difficulty_button_rect)
 
     
     pygame.display.flip()
