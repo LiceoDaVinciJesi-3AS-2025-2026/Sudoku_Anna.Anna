@@ -114,10 +114,6 @@ def inizia_gioco(opzione: str):
 
     genera_puzzle(opzione)
 
-    while puzzle == None:
-        print("Generando...")
-        time.sleep(.5)
-
     STATE = "playing"
 
 while running:
@@ -268,19 +264,20 @@ while running:
                 screen.blit(testo_num, pos_centro)
     
     elif STATE == "menu":
-            # cambia il titolo con quello desiderato
-            title_surface = font_sudoku.render("Sudoku ", True, (0, 0, 0))
-            title_rect = title_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 6))
-            screen.blit(title_surface, title_rect)
+        screen.fill((10, 30, 80))
+        # cambia il titolo con quello desiderato
+        title_surface = font_sudoku.render("Sudoku Anna\u00b2!!", True, (135, 220, 255))
+        title_rect = title_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 6))
+        screen.blit(title_surface, title_rect)
 
-            pygame.draw.rect(screen, (0, 0, 0), (easy_difficulty_button_rect.topleft[0] -15, easy_difficulty_button_rect.topleft[1] - 5, easy_difficulty_button_rect.width + 30, easy_difficulty_button_rect.height + 10))
-            screen.blit(easy_difficulty_button_text, easy_difficulty_button_rect)
+        pygame.draw.rect(screen, (0, 0, 0), (easy_difficulty_button_rect.topleft[0] -15, easy_difficulty_button_rect.topleft[1] - 5, easy_difficulty_button_rect.width + 30, easy_difficulty_button_rect.height + 10))
+        screen.blit(easy_difficulty_button_text, easy_difficulty_button_rect)
 
-            pygame.draw.rect(screen, (0, 0, 0), (medium_difficulty_button_rect.topleft[0] -15, medium_difficulty_button_rect.topleft[1] - 5, medium_difficulty_button_rect.width + 30, medium_difficulty_button_rect.height + 10))
-            screen.blit(medium_difficulty_button_text, medium_difficulty_button_rect)
+        pygame.draw.rect(screen, (0, 0, 0), (medium_difficulty_button_rect.topleft[0] -15, medium_difficulty_button_rect.topleft[1] - 5, medium_difficulty_button_rect.width + 30, medium_difficulty_button_rect.height + 10))
+        screen.blit(medium_difficulty_button_text, medium_difficulty_button_rect)
 
-            pygame.draw.rect(screen, (0, 0, 0), (hard_difficulty_button_rect.topleft[0] -15, hard_difficulty_button_rect.topleft[1] - 5, hard_difficulty_button_rect.width + 30, hard_difficulty_button_rect.height + 10))
-            screen.blit(hard_difficulty_button_text, hard_difficulty_button_rect)
+        pygame.draw.rect(screen, (0, 0, 0), (hard_difficulty_button_rect.topleft[0] -15, hard_difficulty_button_rect.topleft[1] - 5, hard_difficulty_button_rect.width + 30, hard_difficulty_button_rect.height + 10))
+        screen.blit(hard_difficulty_button_text, hard_difficulty_button_rect)
 
     
     pygame.display.flip()
