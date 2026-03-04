@@ -107,13 +107,14 @@ def genera_puzzle(opzione: str):
         print(" ".join(row))
 
 def inizia_gioco(opzione: str):
-    global STATE
+    # global = permette di interagire e utilizzare le variabili già esistenti fuori dalla funzione, dentro la funzione
+    global STATE, puzzle
 
     print(f"Inizio il gioco con difficoltà {opzione}")
 
     genera_puzzle(opzione)
 
-    while genera_puzzle == None:
+    while puzzle == None:
         print("Generando...")
         time.sleep(.5)
 
