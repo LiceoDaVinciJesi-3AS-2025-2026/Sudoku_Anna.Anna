@@ -15,6 +15,13 @@ import pygame
 
 pygame.init()
 
+immagine_sinistra = pygame.image.load("immagine_sinistra.jpeg")
+immagine_destra = pygame.image.load("immagine_destra.jpeg")
+
+# opzionale: ridimensiona le immagini
+immagine_sinistra = pygame.transform.scale(immagine_sinistra, (120, 120))
+immagine_destra = pygame.transform.scale(immagine_destra, (120, 120))
+
 # gli stati sono "menu" e "playing"
 STATE = "menu"
 
@@ -26,7 +33,7 @@ quadretto = 100
 lettere = ["A", "B", "C", "D", "E", "F", "G", "H", "I"]
 
 # font per le lettere e numeri da mettere ai lati della tabella e all'interno delle caselle
-font_sudoku = pygame.font.SysFont('Arial', 45, bold=True)
+font_sudoku = pygame.font.SysFont('Georgia', 80, bold=True)
 font_coordinate = pygame.font.SysFont('Georgia', 30, italic=True)
 
 # ciclo che crea ogni casella su ogni riga
@@ -57,7 +64,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 running = True
 
-font = pygame.font.SysFont('Georgia',30) 
+font = pygame.font.SysFont('Impact',30) 
 textRect = font.render('Esci' , True , "white") 
 buttonRect = pygame.Rect(1200, 925, 140, 30)
 
@@ -65,13 +72,13 @@ buttonRect = pygame.Rect(1200, 925, 140, 30)
 casella_selezionata = None
 
 # colore e carattere dei rettangoli per le tre difficoltà del sudoku (facile, medio, difficile) della scheramata iniziale
-easy_difficulty_button_text = font.render("FACILE", True, "green")
+easy_difficulty_button_text = font.render("FACILE", True, (120, 200, 255))
 easy_difficulty_button_rect = easy_difficulty_button_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3))
 
-medium_difficulty_button_text = font.render("MEDIO", True, "orange")
+medium_difficulty_button_text = font.render("MEDIO", True, (150, 210, 255))
 medium_difficulty_button_rect = medium_difficulty_button_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3 + 75))
 
-hard_difficulty_button_text = font.render("DIFFICILE", True, "red")
+hard_difficulty_button_text = font.render("DIFFICILE", True, (200, 230, 255))
 hard_difficulty_button_rect = hard_difficulty_button_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3 + 150))
 
 # funzione che verifica se il numero inserito è già presente nella stessa riga o colonna
@@ -302,20 +309,27 @@ while running:
     
     elif STATE == "menu":
         # colore dello schermo del menu
-        screen.fill((10, 30, 80))
+        screen.fill((8, 18, 60))
         # cambia il titolo con quello desiderato
-        title_surface = font_sudoku.render("Sudoku Anna\u00b2!!", True, (135, 220, 255))
+        title_surface = font_sudoku.render("Sudoku Anna\u00b2", True, (170, 230, 255))
         title_rect = title_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 6))
         screen.blit(title_surface, title_rect)
 
-        pygame.draw.rect(screen, (255, 253, 208), (easy_difficulty_button_rect.topleft[0] -15, easy_difficulty_button_rect.topleft[1] - 5, easy_difficulty_button_rect.width + 30, easy_difficulty_button_rect.height + 10))
+        pygame.draw.rect(screen, (30, 60, 120), (easy_difficulty_button_rect.topleft[0] -15, easy_difficulty_button_rect.topleft[1] - 5, easy_difficulty_button_rect.width + 30, easy_difficulty_button_rect.height + 10))
         screen.blit(easy_difficulty_button_text, easy_difficulty_button_rect)
 
-        pygame.draw.rect(screen, (255, 253, 208), (medium_difficulty_button_rect.topleft[0] -15, medium_difficulty_button_rect.topleft[1] - 5, medium_difficulty_button_rect.width + 30, medium_difficulty_button_rect.height + 10))
+        pygame.draw.rect(screen, (40, 80, 150), (medium_difficulty_button_rect.topleft[0] -15, medium_difficulty_button_rect.topleft[1] - 5, medium_difficulty_button_rect.width + 30, medium_difficulty_button_rect.height + 10))
         screen.blit(medium_difficulty_button_text, medium_difficulty_button_rect)
 
-        pygame.draw.rect(screen, (255, 253, 208), (hard_difficulty_button_rect.topleft[0] -15, hard_difficulty_button_rect.topleft[1] - 5, hard_difficulty_button_rect.width + 30, hard_difficulty_button_rect.height + 10))
+        pygame.draw.rect(screen, (50, 100, 170), (hard_difficulty_button_rect.topleft[0] -15, hard_difficulty_button_rect.topleft[1] - 5, hard_difficulty_button_rect.width + 30, hard_difficulty_button_rect.height + 10))
         screen.blit(hard_difficulty_button_text, hard_difficulty_button_rect)
+        
+        # posizionamento immagini ai lati dei pulsanti
+        # sinistra: accanto al primo pulsante (FACILE)
+        screen.blit(immagine_sinistra, (easy_difficulty_button_rect.left - 150, easy_difficulty_button_rect.centery - 60))
+
+        # destra: accanto all'ultimo pulsante (DIFFICILE)
+        screen.blit(immagine_destra, (hard_difficulty_button_rect.right + 30, hard_difficulty_button_rect.centery - 60))
 
     
     pygame.display.flip()
