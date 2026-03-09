@@ -1,2 +1,2 @@
 def main() -> None:
-    import sudoku_anna_anna.funzioneDivina
+    import sudoku_anna_anna.Sudoku
