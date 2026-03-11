@@ -18,7 +18,7 @@ pygame.init()
 
 # carichiamo l'immagine
 immagine_originalesx = pygame.image.load("src/sudoku_anna_anna/immagine_sinistra.jpeg")
-immagine_originaledx = pygame.image.load("scr/sudoku_anna_anna/immagine_destra.jpeg")
+immagine_originaledx = pygame.image.load("src/sudoku_anna_anna/immagine_destra.jpeg")
 
 # ridimensiona le immagini
 immagine_sinistra = pygame.transform.scale(immagine_originalesx, (215, 120))
