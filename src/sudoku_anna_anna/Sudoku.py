@@ -120,8 +120,11 @@ def controlla_vittoria():
                 return False
     return True
 
-# creo questa variabile che all'inizio deve essere nulla e ogni volta che genra il sudoku la soluzione cambia valore
+# creo questa variabile che all'inizio deve essere nulla e ogni volta che genera il sudoku la soluzione cambia valore
 soluzione_completa = None
+
+# questa variabile serve per ricordare la difficoltà della partita (easy, medium, hard), poi verrà utilizzata per salvare il record corretto nel file
+difficolta_corrente = None
 
 # funzione che genera il puzzle in base al livello selezionato dall'utente
 def genera_puzzle(opzione: str):
@@ -153,8 +156,10 @@ def genera_puzzle(opzione: str):
 
 # funzione che cambia la variabile STATE, fa partire il cronometro e fa si che la variabile vittoria_registrata diventi sempre False ogni volta che si inizia il gioco
 def inizia_gioco(opzione: str):
-    # global = permette di interagire e utilizzare le variabili già esistenti fuori dalla funzione, dentro la funzione
+    # global = permette di interagire e utilizzare le variabili già esistenti fuori dalla funzione, dentro la funzione, quindi di modificare
     global STATE, puzzle, start_time, vittoria_registrata
+    # viene "registrata" la difficoltà scelta in modo da sapere in quale categoria salvare il record
+    difficoltà_corrente = opzione
     # reset per la nuova partita
     vittoria_registrata = False
     print(f"Inizio il gioco con difficoltà {opzione}")
@@ -175,6 +180,38 @@ def salva_punteggio(tempo_totale):
     file.close() 
     print(f"Punteggio salvato manualmente: {tempo_formattato}")
 
+def trova_record():
+
+    # creazione di un dizionario per salvare il miglior tempo per ogni difficoltà
+    record = {
+        "easy": None,
+        "medium": None,
+        "hard": None
+    }
+
+    try:
+        # apertura del file dei risultati in modalità lettura e successivamente leggere tutte le righe del file
+        file = open("risultati_sudoku.txt", "r")
+        for riga in file:
+            # vengono tolti gli spazi e dividiamo i dati
+            difficoltà, tempo = riga.strip().split("->")
+            # vengono separati i minuti e i secondi
+            minuti, secondi = tempo.split(":")
+            # convertendo tutto in secondi si possono confrontare in modo più facile i tempi
+            tempo_secondi = int(minuti) * 60 + int(secondi)
+
+            # se non esiste ancora un record oppure il tempo trovato è più veloce
+            if record[difficoltà] is None or tempo_secondi < record[difficoltà]:
+                # viene aggiornato il record
+                record[difficoltà] = tempo_secondi
+
+        file.close()
+
+    # se il file non esiste ancora
+    except FileNotFoundError:
+        pass
+    # viene restituito il dizionario con i record
+    return record
 
 # all'inizio nessuna casella è selezionata (variabile che serve per scrivere nel terminale quale casella hai selezionato)
 casella_selezionata = None
