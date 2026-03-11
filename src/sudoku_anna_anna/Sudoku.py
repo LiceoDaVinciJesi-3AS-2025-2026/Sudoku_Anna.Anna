@@ -21,7 +21,7 @@ immagine_originalesx = pygame.image.load("immagine_sinistra.jpeg")
 immagine_originaledx = pygame.image.load("immagine_destra.jpeg")
 
 # ridimensiona le immagini
-immagine_sinistra = pygame.transform.scale(immagine_originalesx, (180, 120))
+immagine_sinistra = pygame.transform.scale(immagine_originalesx, (200, 120))
 immagine_destra = pygame.transform.scale(immagine_originaledx, (200, 150))
 
 # gli stati del gioco sono "menu" e "playing"
@@ -38,7 +38,8 @@ quadretto = 100
 lettere = ["A", "B", "C", "D", "E", "F", "G", "H", "I"]
 
 # font per le lettere e numeri da mettere ai lati della tabella e all'interno delle caselle
-font_sudoku = pygame.font.SysFont('Georgia', 80, bold=True)
+font_sudoku = pygame.font.SysFont('Arial', 60)
+font_titolo = pygame.font.SysFont('Georgia', 80, bold=True)
 font_coordinate = pygame.font.SysFont('Georgia', 30, italic=True)
 
 # CICLO CHE CREA OGNI CASELLA SU OGNI RIGA
@@ -60,8 +61,8 @@ for z in range(9):
     # in questo modo si cambia sempre riga (si scende ogni volta della misura del quadretto che è 100)
     y += 100
 
-## impostiamo i font
-font = pygame.font.SysFont('Impact',30)  
+# impostiamo i font
+font = pygame.font.SysFont('Georgia',30)  
 buttonRect = pygame.Rect(1100, 910, 180, 50)
 
 # colore e carattere dei rettangoli per le tre difficoltà del sudoku (facile, medio, difficile) della scheramata iniziale
@@ -370,7 +371,7 @@ while running:
         # colore dello schermo del menu
         screen.fill((8, 18, 60))
         # cambia il titolo con quello desiderato
-        title_surface = font_sudoku.render("Sudoku Anna\u00b2", True, (170, 230, 255))
+        title_surface = font_titolo.render("Sudoku Anna\u00b2", True, (170, 230, 255))
         title_rect = title_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 6))
         screen.blit(title_surface, title_rect)
         
@@ -386,7 +387,7 @@ while running:
         
         # posizionamento immagini ai lati dei pulsanti
         # sinistra: accanto al primo pulsante (FACILE)
-        screen.blit(immagine_sinistra, (easy_difficulty_button_rect.left - 210, easy_difficulty_button_rect.centery - 60))
+        screen.blit(immagine_sinistra, (easy_difficulty_button_rect.left - 230, easy_difficulty_button_rect.centery - 60))
 
         # destra: accanto all'ultimo pulsante (DIFFICILE)
         screen.blit(immagine_destra, (hard_difficulty_button_rect.right + 30, hard_difficulty_button_rect.centery - 60))
