@@ -17,8 +17,8 @@ user_puzzle: list | None = None
 pygame.init()
 
 # carichiamo l'immagine
-immagine_originalesx = pygame.image.load("immagine_sinistra.jpeg")
-immagine_originaledx = pygame.image.load("immagine_destra.jpeg")
+immagine_originalesx = pygame.image.load("src/sudoku_anna_anna/immagine_sinistra.jpeg")
+immagine_originaledx = pygame.image.load("scr/sudoku_anna_anna/immagine_destra.jpeg")
 
 # ridimensiona le immagini
 immagine_sinistra = pygame.transform.scale(immagine_originalesx, (215, 120))
@@ -348,7 +348,7 @@ while running:
             pygame.draw.rect(screen, (0, 200, 0), messaggio_rect, border_radius=15)
             
             # stabiliamo le caratteristiche del font
-            testo_vittoria = font_sudoku.render("HAI VINTO!", True, "white")
+            testo_vittoria = font_titolo.render("HAI VINTO!", True, "white")
             text_rect = testo_vittoria.get_rect(center=messaggio_rect.center)
             # scriviamo il font nello schermo
             screen.blit(testo_vittoria, text_rect)   
