@@ -41,6 +41,7 @@ lettere = ["A", "B", "C", "D", "E", "F", "G", "H", "I"]
 font_sudoku = pygame.font.SysFont('Arial', 60)
 font_titolo = pygame.font.SysFont('Georgia', 80, bold=True)
 font_coordinate = pygame.font.SysFont('Georgia', 30, italic=True)
+font_cronometro = pygame.font.SysFont('Georgia', 37)
 
 # CICLO CHE CREA OGNI CASELLA SU OGNI RIGA
 # variabili utili per il ciclo for
@@ -77,6 +78,7 @@ hard_difficulty_button_rect = hard_difficulty_button_text.get_rect(center=(SCREE
 
 # variabili necessarie per calcolare il tempo impiegato a risolvere il sudoku
 start_time = 0
+tempo_finale = 0
 vittoria_registrata = False
 
 # FUNZIONI
@@ -298,6 +300,24 @@ while running:
     
 
     if STATE == "playing" and puzzle != None and user_puzzle != None:
+        
+        # ogni volta che ricomincia il ciclo, il tempo aumenta
+        # se not False ---> diventa True
+        if not vittoria_registrata:
+            tempo_corrente = time.time() - start_time
+        else:
+            # se hai vinto, il tempo si ferma al momento della vittoria
+            tempo_corrente = tempo_finale 
+
+        # formatta i minuti e i secondi
+        minuti = int(tempo_corrente // 60)
+        secondi = int(tempo_corrente % 60)
+        stringa_timer = f"Tempo: {minuti:02d}:{secondi:02d}"
+
+        # disegna il tempo a schermo (vicino al tasto Esci)
+        testo_timer = font_cronometro.render(stringa_timer, True, "dark green")
+        screen.blit(testo_timer, (1100, 150))
+        
         buttonColor = "red"
         if buttonRect.collidepoint(mPos):
             buttonColor = "blue"
@@ -397,7 +417,7 @@ while running:
             # scriviamo il font nello schermo
             screen.blit(testo_info, info_rect)
             
-            # se vittoria_registrara non è False quindi è True, ferma il tempo e lo salva 
+            # se vittoria_registrata non è False quindi è True, ferma il tempo e lo salva 
             if not vittoria_registrata:
                 tempo_finale = time.time() - start_time
                 salva_punteggio(tempo_finale)
