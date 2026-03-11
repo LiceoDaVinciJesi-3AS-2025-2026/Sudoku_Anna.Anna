@@ -21,7 +21,7 @@ immagine_originalesx = pygame.image.load("immagine_sinistra.jpeg")
 immagine_originaledx = pygame.image.load("immagine_destra.jpeg")
 
 # ridimensiona le immagini
-immagine_sinistra = pygame.transform.scale(immagine_originalesx, (200, 120))
+immagine_sinistra = pygame.transform.scale(immagine_originalesx, (215, 120))
 immagine_destra = pygame.transform.scale(immagine_originaledx, (200, 150))
 
 # gli stati del gioco sono "menu" e "playing"
@@ -387,7 +387,7 @@ while running:
         
         # posizionamento immagini ai lati dei pulsanti
         # sinistra: accanto al primo pulsante (FACILE)
-        screen.blit(immagine_sinistra, (easy_difficulty_button_rect.left - 230, easy_difficulty_button_rect.centery - 60))
+        screen.blit(immagine_sinistra, (easy_difficulty_button_rect.left - 245, easy_difficulty_button_rect.centery - 60))
 
         # destra: accanto all'ultimo pulsante (DIFFICILE)
         screen.blit(immagine_destra, (hard_difficulty_button_rect.right + 30, hard_difficulty_button_rect.centery - 60))
