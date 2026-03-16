@@ -3,11 +3,9 @@
 
 # importiamo tutti i moduli che ci servono
 import pygame
-import random
-import time 
+import time
 
-from sudoku9 import SudokuSolver
-from sudoku9 import SudokuGenerator
+from sudoku9 import SudokuSolver, SudokuGenerator
 
 # in questo modo la variabile puzzle può equivalere ad una lista oppure a niente(None) e in questo caso vale niente(None)
 puzzle: list | None = None
@@ -17,14 +15,15 @@ user_puzzle: list | None = None
 pygame.init()
 
 # carichiamo l'immagine
-immagine_originalesx = pygame.image.load("src/sudoku_anna_anna/immagine_sinistra.jpeg")
-immagine_originaledx = pygame.image.load("src/sudoku_anna_anna/immagine_destra.jpeg")
+immagine_originalesx = pygame.image.load("immagine_sinistra.jpeg")
+immagine_originaledx = pygame.image.load("immagine_destra.jpeg")
 
 # ridimensiona le immagini
 immagine_sinistra = pygame.transform.scale(immagine_originalesx, (215, 120))
 immagine_destra = pygame.transform.scale(immagine_originaledx, (200, 150))
 
 # gli stati del gioco sono "menu" e "playing"
+# è una variabile che indica lo stato corrente di gioco
 STATE = "menu"
 
 # grandezza della finestra
@@ -176,44 +175,11 @@ def salva_punteggio(tempo_totale):
     minuti = int(tempo_totale // 60)
     secondi = int(tempo_totale % 60)
     tempo_formattato = f"{minuti:02}:{secondi:02}"
-    
+
     file = open("risultati_sudoku.txt", "a")
     file.write(f"Partita completata in: {tempo_formattato} minuti\n")
     file.close() 
     print(f"Punteggio salvato manualmente: {tempo_formattato}")
-
-def trova_record():
-
-    # creazione di un dizionario per salvare il miglior tempo per ogni difficoltà
-    record = {
-        "easy": None,
-        "medium": None,
-        "hard": None
-    }
-
-    try:
-        # apertura del file dei risultati in modalità lettura e successivamente leggere tutte le righe del file
-        file = open("risultati_sudoku.txt", "r")
-        for riga in file:
-            # vengono tolti gli spazi e dividiamo i dati
-            difficoltà, tempo = riga.strip().split("->")
-            # vengono separati i minuti e i secondi
-            minuti, secondi = tempo.split(":")
-            # convertendo tutto in secondi si possono confrontare in modo più facile i tempi
-            tempo_secondi = int(minuti) * 60 + int(secondi)
-
-            # se non esiste ancora un record oppure il tempo trovato è più veloce
-            if record[difficoltà] is None or tempo_secondi < record[difficoltà]:
-                # viene aggiornato il record
-                record[difficoltà] = tempo_secondi
-
-        file.close()
-
-    # se il file non esiste ancora
-    except FileNotFoundError:
-        pass
-    # viene restituito il dizionario con i record
-    return record
 
 # all'inizio nessuna casella è selezionata (variabile che serve per scrivere nel terminale quale casella hai selezionato)
 casella_selezionata = None
