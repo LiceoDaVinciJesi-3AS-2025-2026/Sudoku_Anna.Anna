@@ -124,9 +124,6 @@ def controlla_vittoria():
 # creo questa variabile che all'inizio deve essere nulla e ogni volta che genera il sudoku la soluzione cambia valore
 soluzione_completa = None
 
-# questa variabile serve per ricordare la difficoltà della partita (easy, medium, hard), poi verrà utilizzata per salvare il record corretto nel file
-difficolta_corrente = None
-
 # funzione che genera il puzzle in base al livello selezionato dall'utente
 def genera_puzzle(opzione: str):
     # in pratica global evita di creare una variabile DENTRO la funzione e quindi si riferisce a "puzzle" che si trova fuori dalla funzione
@@ -159,8 +156,6 @@ def genera_puzzle(opzione: str):
 def inizia_gioco(opzione: str):
     # global = permette di interagire e utilizzare le variabili già esistenti fuori dalla funzione, dentro la funzione, quindi di modificare
     global STATE, puzzle, start_time, vittoria_registrata
-    # viene "registrata" la difficoltà scelta in modo da sapere in quale categoria salvare il record
-    difficoltà_corrente = opzione
     # reset per la nuova partita
     vittoria_registrata = False
     print(f"Inizio il gioco con difficoltà {opzione}")
