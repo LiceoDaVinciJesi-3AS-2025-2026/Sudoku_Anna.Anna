@@ -2,10 +2,14 @@
 # La potete utilizzare finchè Anna smette di ridere
 
 # importiamo tutti i moduli che ci servono
-import pygame
+
+# libreria Standard
 import time
 
+# librerie pip
+import pygame
 from sudoku9 import SudokuSolver, SudokuGenerator
+from importlib.resources import files
 
 # in questo modo la variabile puzzle può equivalere ad una lista oppure a niente(None) e in questo caso vale niente(None)
 puzzle: list | None = None
@@ -15,8 +19,8 @@ user_puzzle: list | None = None
 pygame.init()
 
 # carichiamo l'immagine
-immagine_originalesx = pygame.image.load("immagine_sinistra.jpeg")
-immagine_originaledx = pygame.image.load("immagine_destra.jpeg")
+immagine_originalesx = pygame.image.load( files(__package__) / "immagine_sinistra.jpeg")
+immagine_originaledx = pygame.image.load( files(__package__) / "immagine_destra.jpeg")
 
 # ridimensiona le immagini
 immagine_sinistra = pygame.transform.scale(immagine_originalesx, (215, 120))
