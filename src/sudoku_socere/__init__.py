@@ -96,6 +96,14 @@ casella_selezionata = None
 # schermo
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+# memorizza "easy", "medium" o "hard"
+difficolta_scelta: str | None = None
+# variabile del nome
+user_name = ""
+# creazione del rettangolo sotto i pulsanti delle difficoltà
+input_rect = pygame.Rect(SCREEN_WIDTH // 2 - 150, 700, 300, 50)
+
+
 def main() -> None:
     # qui dentro il codice che chiama le altre funzioni e il ciclo while True principale
     
@@ -195,10 +203,15 @@ def main() -> None:
 
     # funzione che scrive il tempo impiegato in un file di testo quando hai completato il sudoku
     def salva_punteggio(tempo_totale):
+        
+        global user_name, difficolta_scelta
+        
         minuti = int(tempo_totale // 60)
         secondi = int(tempo_totale % 60)
         tempo_formattato = f"{minuti:02}:{secondi:02}"
-
+        
+        nuova_partita = f"{user_name} - {difficolta_scelta.upper()} - {tempo_formattato}\n"
+        
         file = open(dirs.user_data_dir + "risultati_sudoku.txt", "a")
         file.write(f"Partita completata in: {tempo_formattato} minuti\n")
         file.close()
@@ -253,14 +266,15 @@ def main() -> None:
                             print(f"Il valore che hai selezionato è {valore_dal_puzzle}")
 
                 elif STATE == "menu":
-                    # si passa allo stato playing che è diverso in base a quale livello clicchi
+                    # salva il livello in una variabile
                     # perchè in base al livello crea una griglia diversa
+                    # salviamo la difficoltà perchè prima deve inserire il nome e dopo lo stato deve passare a "playing"
                     if easy_difficulty_button_rect.collidepoint(mPos):
-                        inizia_gioco("easy")
+                        difficolta_scelta = "easy"
                     elif medium_difficulty_button_rect.collidepoint(mPos):
-                        inizia_gioco("medium")
+                        difficolta_scelta = "medium"
                     elif hard_difficulty_button_rect.collidepoint(mPos):
-                        inizia_gioco("hard")
+                        difficolta_scelta = "hard"
 
         # se clicchi e se sul punto in cui hai cliccato c'è una casella
         if (
@@ -495,6 +509,40 @@ def main() -> None:
                     hard_difficulty_button_rect.centery - 60,
                 ),
             )
+        
+            # Disegna rettangolo bianco per il nome
+            pygame.draw.rect(screen, "white", input_rect, border_radius=10)
+            if difficolta_scelta: # Mostra il bordo colorato solo se hai scelto una difficoltà
+                pygame.draw.rect(screen, (170, 230, 255), input_rect, 3, border_radius=10)
+
+            # Render del nome scritto
+            nome_surf = font.render(user_name, True, "black")
+            screen.blit(nome_surf, (input_rect.x + 10, input_rect.y + 5))
+
+            # Testo di istruzioni
+            if difficolta_scelta:
+                testo_guida = font_coordinate.render(f"Livello {difficolta_scelta.upper()}: scrivi il nome e premi INVIO", True, "white")
+                screen.blit(testo_guida, (SCREEN_WIDTH // 2 - testo_guida.get_width() // 2, input_rect.bottom + 15))
+
+
+            # ti fa scrivere il nome dopo che hai selezionato la difficoltà
+            if difficolta_scelta:
+                # se premi INVIO e hai inserito il nome (quindi se la variabile user_name non è vuota)
+                if event.key == pygame.K_RETURN and user_name.strip() != "":
+                    # inizia il gioco in base alla difficoltà ---> passa allo stato "playing"
+                    inizia_gioco(difficolta_scelta)
+                #     
+                elif event.key == pygame.K_BACKSPACE:
+                    # conta quanti caratteri hai inserito
+                    lunghezza = len(user_name)
+                    
+                    if lunghezza > 0:
+                        # i due punti servono per limitare la lunghezza, praticamente prende tutti i caratteri dalla posizione 0 tranne quello alla lunghezza -1 quindi tranne l'ultimo
+                        user_name = user_name[0 : lunghezza - 1]
+                else:
+                    # il limite massimo di caratteri inseribili è 12 e isprintable controlla se li carattere è scrivibile (tipo Tab o Ctrl non sono scrivibili)
+                    if len(user_name) < 12 and event.unicode.isprintable():
+                        user_name += event.unicode
 
         # mostra tutto quello che hai disegnato durante il ciclo while
         pygame.display.flip()
