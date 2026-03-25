@@ -96,9 +96,6 @@ casella_selezionata = None
 # schermo
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-running = True
-
-
 def main() -> None:
     # qui dentro il codice che chiama le altre funzioni e il ciclo while True principale
     
@@ -208,6 +205,7 @@ def main() -> None:
         print(f"Punteggio salvato manualmente: {tempo_formattato}")
         import sudoku_socere.Sudoku
         
+    running = True
     # quando inizia il gioco
     while running:
         # colora lo sfondo di bianco
