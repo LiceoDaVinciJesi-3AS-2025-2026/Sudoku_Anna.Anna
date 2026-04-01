@@ -4,5 +4,5 @@ Anna Pieralisi e Anna Mazzarini
 
 
 
-!\[](IstruzioniSudoku.png)
+![Istruzioni sudoku](IstruzioniSudoku.png)
 
