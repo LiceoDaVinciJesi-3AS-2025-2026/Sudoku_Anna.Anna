@@ -1,4 +1,4 @@
-# Sudoku\_Anna.Anna
+# sudoku_socere
 
 Anna Pieralisi e Anna Mazzarini
 
